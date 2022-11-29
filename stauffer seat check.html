@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<div class="header">
+
+   <head>
+      <meta http-equiv="refresh" content="5">
+      <link rel="stylesheet" type="text/css" href="stylesheet.css" />
+      <style>
+         body {
+            margin: 0;
+            padding: 0;
+            text-align: center;
+         }
+
+         .header {
+            background-color: rgba(240, 240, 240, 0.788);
+            padding-bottom: 5px;
+         }
+
+         h1,
+         h3,
+         table {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+         }
+
+         .circle {
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+            margin-left: auto;
+            margin-right: auto;
+         }
+
+         table {
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            width: 33%;
+            border: 1px;
+         }
+
+         .image {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            position: absolute;
+            width: 855px;
+            height: 1314px;
+            z-index: 1;
+         }
+
+         .current-floor {
+            background-color: rgba(240, 240, 240, 0.788);
+         }
+
+         #container {
+            text-align: center;
+            display: inline-block;
+            width: 855px;
+            height: 1313px;
+            margin: 0 auto;
+            background: black;
+            border: 8px solid black;
+            border-radius: 5px;
+            box-shadow: 0 5px 50px #333;
+         }
+
+         #mapCanvas {
+            position: relative;
+            z-index: 20;
+         }
+      </style>
+      <title>Seat-Check</title>
+      <h1>Stauffer Library Seat Checker</h1>
+      <table>
+         <tr>
+            <th colspan="3">Availability Legend</th>
+         </tr>
+         <tr>
+            <td>Available</td>
+            <td>Unknown</td>
+            <td>Occupied</td>
+         </tr>
+         <tr>
+            <td>
+               <div class="circle" style="background-color: green;"></div>
+            </td>
+            <td>
+               <div class="circle" style="background-color: yellow;"></div>
+            </td>
+            <td>
+               <div class="circle" style="background-color: red;"></div>
+            </td>
+         </tr>
+      </table>
+   </head>
+</div>
+
+<body
+   style="background-image: url(https://www.queensu.ca/history/sites/default/files/styles/feature/public/img/feature/Stauffer.jpg?h=ee869025&itok=isN9wqOz);">
+   <h3 class="current-floor">Currently Viewing: 2nd Floor</h3>
+   <h1 id="status" type="text"></h1>
+   <div style="text-align: center;" id="container">
+      <img class='image'
+         src="https://library.queensu.ca/sites/default/files/styles/location_floor/public/images/floor-plans/stauffer_second_floor_2020.png?itok=YBVFEP0Q"
+         alt="" />
+      <canvas id="mapCanvas" width="855" height="1314" style="border:1px solid #000000;"></canvas>
+   </div>
+   <script type="module">
+      const status = document.getElementById("status");
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+      // Your web app's Firebase configuration
+
+      const firebaseConfig = {
+         apiKey: "AIzaSyDABIDB7F3_WFABGyqDLjtjNW5MVl_lmnA",
+         authDomain: "apsc200-p2.firebaseapp.com",
+         databaseURL: "https://apsc200-p2-default-rtdb.firebaseio.com",
+         projectId: "apsc200-p2",
+         storageBucket: "apsc200-p2.appspot.com",
+         messagingSenderId: "253430190602",
+         appId: "1:253430190602:web:713afbdbd4c22fcb6505f3"
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+
+      // Import required tools
+      import { getDatabase, get, ref, child, onValue } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-database.js";
+
+      // Create reference to database
+      //const dbRef = ref(getDatabase());
+      function getPressureData() {
+         const dbRef = ref(getDatabase(), "INPUT/");
+         return get(dbRef).then((snapshot) => {
+            if (snapshot.exists()) {
+               return snapshot.val().setPressure;
+            }
+         });
+      }
+
+      function getMotionData() {
+         const dbRef = ref(getDatabase(), "INPUT/");
+         return get(dbRef).then((snapshot) => {
+            if (snapshot.exists()) {
+               return snapshot.val().setMotion;
+            }
+         });
+      }
+
+      async function fetchPressureData() {
+         let pressureResponse = await getPressureData();
+         let pressureData = await pressureResponse;
+         return pressureData;
+      }
+
+      async function fetchMotionData() {
+         let motionResponse = await getMotionData();
+         let motionData = await motionResponse;
+         return motionResponse
+      }
+
+      let p = await fetchPressureData();
+      let m = await fetchMotionData();
+
+      //console.log(pressure);
+
+
+
+      /*
+      // Update function gives status of seating
+      get(child(dbRef, "INPUT")).then((snapshot) => {
+         // Check the path's validity
+         if (snapshot.exists()) {
+            if (snapshot.val().setMotion === true && snapshot.val().setPressure === true) {
+               status.innerHTML = "OCCUPIED";
+               colorToSet.mode = 1;
+            }
+            else if (snapshot.val().setMotion === true || snapshot.val().setPressure === true) {
+               status.innerHTML = "UNKNOWN";
+               colorToSet.mode = 2;
+            }
+            else {
+               status.innerHTML = "UNNOCCUPIED";
+               colorToSet.mode = 3;
+            }
+            handleMode(colorToSet);
+         } else {
+            console.log("No data available");
+         }
+      }).catch((error) => {
+         console.error(error);
+      });
+      */
+
+
+
+      var canvas = document.getElementById("mapCanvas"),
+         ctx = canvas.getContext("2d");
+
+      canvas.width = 855;
+      canvas.height = 1314;
+
+      /*
+      let colour = function handleMode(m) {
+         console.log(m.mode);
+         if (m.mode == 1) {
+            ctx.fillStyle = "red";
+         }
+         else if (m.mode == 2) {
+            ctx.fillStyle = "yellow";
+         }
+         else if (m.mode == 3) {
+            ctx.fillStyle = "green";
+         }
+         ctx.fill();
+      }
+      
+      function drawRect() {
+         if (colorToSet == 1) {
+            ctx.fillStyle = "red";
+         }
+         else if (colorToSet == 2) {
+            ctx.fillStyle = "yellow";
+         }
+         else if (colorToSet == 3) {
+            ctx.fillStyle = "green";
+         }
+         ctx.fill();
+      }
+      //drawRect();
+      */
+
+      if (m == true && p == true) {
+         ctx.fillStyle = "red";
+      }
+      else if (p == true || m == true) {
+         ctx.fillStyle = "yellow";
+      }
+      else {
+         ctx.fillStyle = "green";
+      }
+      //ctx.fillCircle(512, 875, 10, 10);
+      ctx.beginPath();
+      ctx.arc(512, 875, 8, 0, 2 * Math.PI, false);
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'black';
+      ctx.stroke();
+
+
+
+// Draw whatever else over top of it on the canvas.
+   </script>
+</body>
+
+</html>
