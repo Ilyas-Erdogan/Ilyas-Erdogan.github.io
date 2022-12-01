@@ -3,7 +3,7 @@
 <div class="header">
 
    <head>
-      <meta http-equiv="refresh" content="2">
+      <meta http-equiv="refresh" content="5">
       <link rel="stylesheet" type="text/css" href="stylesheet.css" />
       <style>
          body {
@@ -72,7 +72,7 @@
          }
       </style>
       <title>Seat-Check</title>
-      <h1>StauffSpots</h1>
+      <h1>Stauffer Library Seat Checker</h1>
       <table>
          <tr>
             <th colspan="3">Availability Legend</th>
@@ -131,109 +131,55 @@
       // Import required tools
       import { getDatabase, get, ref, child, onValue } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-database.js";
 
-      // Create reference to database
-      //const dbRef = ref(getDatabase());
+      // Function taht collects pressure sensor data sent from arduino to firebase server
       function getPressureData() {
          const dbRef = ref(getDatabase(), "INPUT/");
          return get(dbRef).then((snapshot) => {
             if (snapshot.exists()) {
+               // If found within database, return the current pressure
                return snapshot.val().setPressure;
             }
          });
       }
 
+      // Function taht collects motion sensor data sent from arduino to firebase server
       function getMotionData() {
          const dbRef = ref(getDatabase(), "INPUT/");
          return get(dbRef).then((snapshot) => {
             if (snapshot.exists()) {
+               // If found within databse, return the current motion
                return snapshot.val().setMotion;
             }
          });
       }
 
+      // Asynchronous function to wait for pressure sensor data to be found and returned
       async function fetchPressureData() {
          let pressureResponse = await getPressureData();
          let pressureData = await pressureResponse;
          return pressureData;
       }
 
+      // Asynchronous function to wait for motion sensor data to be found and returned
       async function fetchMotionData() {
          let motionResponse = await getMotionData();
          let motionData = await motionResponse;
          return motionResponse
       }
 
+      // Storage of motion and presure boolean variables
       let p = await fetchPressureData();
       let m = await fetchMotionData();
 
-      //console.log(pressure);
-
-
-
-      /*
-      // Update function gives status of seating
-      get(child(dbRef, "INPUT")).then((snapshot) => {
-         // Check the path's validity
-         if (snapshot.exists()) {
-            if (snapshot.val().setMotion === true && snapshot.val().setPressure === true) {
-               status.innerHTML = "OCCUPIED";
-               colorToSet.mode = 1;
-            }
-            else if (snapshot.val().setMotion === true || snapshot.val().setPressure === true) {
-               status.innerHTML = "UNKNOWN";
-               colorToSet.mode = 2;
-            }
-            else {
-               status.innerHTML = "UNNOCCUPIED";
-               colorToSet.mode = 3;
-            }
-            handleMode(colorToSet);
-         } else {
-            console.log("No data available");
-         }
-      }).catch((error) => {
-         console.error(error);
-      });
-      */
-
-
-
+      // Start a canvas within the page
       var canvas = document.getElementById("mapCanvas"),
          ctx = canvas.getContext("2d");
 
+      // Define canvas dimensions
       canvas.width = 855;
       canvas.height = 1314;
 
-      /*
-      let colour = function handleMode(m) {
-         console.log(m.mode);
-         if (m.mode == 1) {
-            ctx.fillStyle = "red";
-         }
-         else if (m.mode == 2) {
-            ctx.fillStyle = "yellow";
-         }
-         else if (m.mode == 3) {
-            ctx.fillStyle = "green";
-         }
-         ctx.fill();
-      }
-      
-      function drawRect() {
-         if (colorToSet == 1) {
-            ctx.fillStyle = "red";
-         }
-         else if (colorToSet == 2) {
-            ctx.fillStyle = "yellow";
-         }
-         else if (colorToSet == 3) {
-            ctx.fillStyle = "green";
-         }
-         ctx.fill();
-      }
-      //drawRect();
-      */
-
+      // Depending on status of motion and pressure sensors, update fill colour of circle accordingly
       if (m == true && p == true) {
          ctx.fillStyle = "red";
       }
@@ -243,17 +189,127 @@
       else {
          ctx.fillStyle = "green";
       }
-      //ctx.fillCircle(512, 875, 10, 10);
+      
+      // Create and fill out circle to be updated
       ctx.beginPath();
-      ctx.arc(512, 875, 8, 0, 2 * Math.PI, false);
+      ctx.arc(516, 877, 8, 0, 2 * Math.PI, false);
       ctx.fill();
       ctx.lineWidth = 1;
       ctx.strokeStyle = 'black';
       ctx.stroke();
 
+      // Create and fill our STATIC NON-UPDATING circles
+      ctx.fillStyle = "green";
+      ctx.beginPath();
+      ctx.arc(516, 697, 8, 0, 2 * Math.PI, false);
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'black';
+      ctx.stroke();
 
+      ctx.fillStyle = "green";
+      ctx.beginPath();
+      ctx.arc(516, 717, 8, 0, 2 * Math.PI, false);
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'black';
+      ctx.stroke();
 
-// Draw whatever else over top of it on the canvas.
+      ctx.fillStyle = "green";
+      ctx.beginPath();
+      ctx.arc(516, 737, 8, 0, 2 * Math.PI, false);
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'black';
+      ctx.stroke();
+
+      ctx.fillStyle = "green";
+      ctx.beginPath();
+      ctx.arc(516, 757, 8, 0, 2 * Math.PI, false);
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'black';
+      ctx.stroke();
+
+      ctx.fillStyle = "green";
+      ctx.beginPath();
+      ctx.arc(516, 777, 8, 0, 2 * Math.PI, false);
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'black';
+      ctx.stroke();
+
+      ctx.fillStyle = "green";
+      ctx.beginPath();
+      ctx.arc(516, 797, 8, 0, 2 * Math.PI, false);
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'black';
+      ctx.stroke();
+
+      ctx.fillStyle = "yellow";
+      ctx.beginPath();
+      ctx.arc(516, 817, 8, 0, 2 * Math.PI, false);
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'black';
+      ctx.stroke();
+
+      ctx.fillStyle = "green";
+      ctx.beginPath();
+      ctx.arc(516, 837, 8, 0, 2 * Math.PI, false);
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'black';
+      ctx.stroke();
+
+      ctx.fillStyle = "green";
+      ctx.beginPath();
+      ctx.arc(516, 857, 8, 0, 2 * Math.PI, false);
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'black';
+      ctx.stroke();
+
+      ctx.fillStyle = "green";
+      ctx.beginPath();
+      ctx.arc(516, 897, 8, 0, 2 * Math.PI, false);
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'black';
+      ctx.stroke();
+
+      ctx.fillStyle = "yellow";
+      ctx.beginPath();
+      ctx.arc(516, 917, 8, 0, 2 * Math.PI, false);
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'black';
+      ctx.stroke();
+
+      ctx.fillStyle = "green";
+      ctx.beginPath();
+      ctx.arc(516, 937, 8, 0, 2 * Math.PI, false);
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'black';
+      ctx.stroke();
+
+      ctx.fillStyle = "green";
+      ctx.beginPath();
+      ctx.arc(516, 957, 8, 0, 2 * Math.PI, false);
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'black';
+      ctx.stroke();
+
+      ctx.fillStyle = "green";
+      ctx.beginPath();
+      ctx.arc(516, 977, 8, 0, 2 * Math.PI, false);
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'black';
+      ctx.stroke();
    </script>
 </body>
 
